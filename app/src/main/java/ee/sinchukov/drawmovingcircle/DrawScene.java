@@ -4,8 +4,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Handler;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
 
 /**
@@ -19,7 +22,9 @@ public class DrawScene extends View {
     private int x;
     private int y;
     private int circleRadius=50;
-    private int screenWidth;
+
+    private static int screenWidth;
+    private static int screenHeight;
     private Handler h;
 
     // sift coordinates pixels by frame,  and frame rate
@@ -51,6 +56,7 @@ public class DrawScene extends View {
 
         h = new Handler();
 
+        setScreenWidthHeight(context);
     }
 
     private Runnable r = new Runnable() {
@@ -63,7 +69,6 @@ public class DrawScene extends View {
     @Override
     protected void onDraw(Canvas sceneCanvas) {
         super.onDraw(sceneCanvas);
-
         sceneCanvas.drawPaint(canvasPaint);
         sceneCanvas.drawCircle(x,y,circleRadius,circlePaint);
 
@@ -71,11 +76,11 @@ public class DrawScene extends View {
         x=x+dx;
         y+=dy;
 
-        if(x>this.getWidth() -circleRadius || x<circleRadius){
+        if(x>screenWidth -circleRadius || x<circleRadius){
             dx=dx*(-1);
         }
 
-        if(y>this.getHeight()-circleRadius || y<circleRadius){
+        if(y>screenHeight-circleRadius || y<circleRadius){
             dy=dy*(-1);
         }
 
@@ -83,5 +88,14 @@ public class DrawScene extends View {
         h.postDelayed(r,FRAME_RATE);
     }
 
+protected void setScreenWidthHeight(Context context){
+
+    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    Display display = wm.getDefaultDisplay();
+    Point size = new Point();
+    display.getSize(size);
+    screenWidth = size.x;
+    screenHeight = size.y;
+}
 
 }
